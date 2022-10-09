@@ -1,8 +1,10 @@
-﻿using MultiThreading.Task3.MatrixMultiplier.Matrices;
+﻿using System;
+using System.Diagnostics;
+using MultiThreading.Task3.MatrixMultiplier.Matrices;
 
 namespace MultiThreading.Task3.MatrixMultiplier.Multipliers
 {
-    public class MatricesMultiplier : IMatricesMultiplier
+    public class MatricesMultiplier : IMatricesMultiplier, IMatrixElapser
     {
         public IMatrix Multiply(IMatrix m1, IMatrix m2)
         {
@@ -22,6 +24,17 @@ namespace MultiThreading.Task3.MatrixMultiplier.Multipliers
             };
 
             return resultMatrix;
+        }
+
+        public long GetMultiplyElapsed(IMatrix m1, IMatrix m2)
+        {
+            Stopwatch stopwatch = new Stopwatch();
+
+            stopwatch.Start();
+            Multiply(m1, m2);
+            stopwatch.Stop();
+
+            return stopwatch.ElapsedMilliseconds;
         }
     }
 }

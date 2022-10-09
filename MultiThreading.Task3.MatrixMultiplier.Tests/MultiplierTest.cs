@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MultiThreading.Task3.MatrixMultiplier.Matrices;
 using MultiThreading.Task3.MatrixMultiplier.Multipliers;
@@ -20,6 +21,8 @@ namespace MultiThreading.Task3.MatrixMultiplier.Tests
         {
             // todo: implement a test method to check the size of the matrix which makes parallel multiplication more effective than
             // todo: the regular one
+            var effectiveSize = GetEffectiveMatrixSizeForParallel();
+            Debug.WriteLine($"Size of the matrix which makes parallel multiplication more effective than the regular one is {effectiveSize}");
         }
 
         #region private methods
@@ -69,6 +72,47 @@ namespace MultiThreading.Task3.MatrixMultiplier.Tests
             Assert.AreEqual(109, multiplied.GetElement(2, 0));
             Assert.AreEqual(213, multiplied.GetElement(2, 1));
             Assert.AreEqual(728, multiplied.GetElement(2, 2));
+        }
+
+        private int GetEffectiveMatrixSizeForParallel()
+        {
+            var effectiveSize = 2;
+            var smallSize = true;
+
+            while (smallSize)
+            {
+                var timeElapsed = GetTimeElapsed(effectiveSize);
+                smallSize = timeElapsed.Item1 < timeElapsed.Item2;
+                effectiveSize++;
+            }
+
+            return effectiveSize;
+        }
+
+        private Tuple<long, long> GetTimeElapsed(int matrixSize)
+        {
+            var m1 = CreateTestQuadMatrix(matrixSize);
+            var m2 = CreateTestQuadMatrix(matrixSize);
+
+            var elapsedRegular = (new MatricesMultiplier()).GetMultiplyElapsed(m1, m2);
+            var elapsedParallel = (new MatricesMultiplierParallel()).GetMultiplyElapsed(m1, m2);
+
+            return Tuple.Create(elapsedRegular, elapsedParallel);
+        }
+
+        private Matrix CreateTestQuadMatrix(int size)
+        {
+            var matrix = new Matrix(size, size);
+            var rnd = new Random();
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    matrix.SetElement(i, j, rnd.Next(2, 5));
+                }
+            }
+
+            return matrix;
         }
 
         #endregion

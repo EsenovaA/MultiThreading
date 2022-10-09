@@ -5,6 +5,8 @@
  * Use Thread, ThreadPool or Task classes for thread creation and any kind of synchronization constructions.
  */
 using System;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace MultiThreading.Task5.Threads.SharedCollection
 {
