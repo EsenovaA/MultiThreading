@@ -31,11 +31,12 @@ namespace MultiThreading.Task2.Chaining
 
         static void ExecuteTaskChain()
         {
+            // Warning: Use methods as tasks bodies
             Task<int[]> taskRandom = Task.Run(() =>
             {
-                var rnd = new Random();
-                var intArray = new int[10];
-                for (int i = 0; i < 10; i++)
+                var rnd = new Random(); // Warning: better to use common randomiser
+                var intArray = new int[10]; // Warning: use const or extrnal variable instead of 10
+                for (int i = 0; i < 10; i++) // Error: use Length property, the same in all cases bellow
                 {
                     intArray[i] = rnd.Next(0, RandomMaxValue);
                     Console.WriteLine($"Source array element[{i}] = {intArray[i]}");
@@ -51,7 +52,7 @@ namespace MultiThreading.Task2.Chaining
                 Console.WriteLine($"Multiple array on = {multipleOn}");
                 for (int i = 0; i < 10; i++)
                 {
-                    inArray[i] = inArray[i] * multipleOn;
+                    inArray[i] = inArray[i] * multipleOn; // Error: side effect, the insput is changed, better to create output array
                     Console.WriteLine($"Multiplied array element[{i}] = {inArray[i]}");
                 }
                 return inArray;
@@ -61,7 +62,7 @@ namespace MultiThreading.Task2.Chaining
             {
                 var inArray = antecedent.Result;
                 var outArray = inArray.OrderBy(x=>x).ToArray();
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 10; i++) // Warning: foreach
                 {
                     Console.WriteLine($"Sorted array element[{i}] = {outArray[i]}");
                 }

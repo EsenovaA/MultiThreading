@@ -29,13 +29,16 @@ namespace MultiThreading.Task1._100Tasks
             var tasks = new Task[TaskAmount];
             for (int i = 0; i < TaskAmount; i++)
             {
+                // Warning: Better to use Task.Factory
                 tasks[i] = new Task((object param) =>
                 {
+                    // Warning: move to delegate method
                     var t = (int)param;
                     Output(t);
                 }, i);
             }
 
+            // Error: no need to use Parallel to start already parallel tasks
             Parallel.ForEach<Task>(tasks, (t) => { t.Start(); });
             Task.WaitAll(tasks);
         }
