@@ -30,25 +30,20 @@ namespace MultiThreading.Task1._100Tasks
             for (int i = 0; i < TaskAmount; i++)
             {
                 // Warning: Better to use Task.Factory
-                tasks[i] = new Task((object param) =>
-                {
-                    // Warning: move to delegate method
-                    var t = (int)param;
-                    Output(t);
-                }, i);
+                Task.Factory.StartNew(() => Print(i));
             }
 
             // Error: no need to use Parallel to start already parallel tasks
-            Parallel.ForEach<Task>(tasks, (t) => { t.Start(); });
-            Task.WaitAll(tasks);
+            Task.WhenAll(tasks);
         }
 
-        static void Output(int taskNumber)
+        static void Print(int param)
         {
-            for(int i = 0; i< MaxIterationsCount; i++)
+            for (int i = 0; i < MaxIterationsCount; i++)
             {
-                Console.WriteLine($"Task #{taskNumber} – {i}");
+                Console.WriteLine($"Task #{param} – {i}");
             }
         }
+        
     }
 }

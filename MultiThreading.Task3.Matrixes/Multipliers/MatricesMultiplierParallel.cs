@@ -9,13 +9,15 @@ namespace MultiThreading.Task3.MatrixMultiplier.Multipliers
         public IMatrix Multiply(IMatrix m1, IMatrix m2)
         {
             var resultMatrix = new Matrix(m1.RowCount, m2.ColCount);
-            // Error: this should be paralled too
-            for (long i = 0; i < m1.RowCount; i++)
-            {
-                Parallel.For(0, m2.ColCount, j => resultMatrix.SetMultipliedElement(m1, m2, i, (int)j)); // Warning: use whether int or long everywhere
-            };
+            
+            Parallel.For(0, m1.RowCount, i => SetMultipliedElementParallel(m1, m2, resultMatrix, i));
 
             return resultMatrix;
+        }
+
+        public void SetMultipliedElementParallel(IMatrix m1, IMatrix m2, Matrix resultMatrix, long i)
+        {
+            Parallel.For(0, m2.ColCount, j => resultMatrix.SetMultipliedElement(m1, m2, i, j)); // Warning: use whether int or long everywhere
         }
 
         public long GetMultiplyElapsed(IMatrix m1, IMatrix m2)
@@ -32,7 +34,7 @@ namespace MultiThreading.Task3.MatrixMultiplier.Multipliers
 
     public static class MatrixHelper
     {
-        public static void SetMultipliedElement(this Matrix matrix, IMatrix m1, IMatrix m2, long i, int j)
+        public static void SetMultipliedElement(this Matrix matrix, IMatrix m1, IMatrix m2, long i, long j)
         {
             long sum = 0;
             for (byte k = 0; k < m1.ColCount; k++)

@@ -14,6 +14,10 @@ namespace MultiThreading.Task2.Chaining
     class Program
     {
         private const int RandomMaxValue = 1000;
+        private static Random _rnd = new Random();
+        private const int _arrayLength = 10;
+        private const int _maxRandomValue = 10;
+        private const int _minRandomValue = 5;
 
         static void Main(string[] args)
         {
@@ -32,65 +36,59 @@ namespace MultiThreading.Task2.Chaining
         static void ExecuteTaskChain()
         {
             // Warning: Use methods as tasks bodies
-            Task<int[]> taskRandom = Task.Run(() =>
-            {
-                var rnd = new Random(); // Warning: better to use common randomiser
-                var intArray = new int[10]; // Warning: use const or extrnal variable instead of 10
-                for (int i = 0; i < 10; i++) // Error: use Length property, the same in all cases bellow
-                {
-                    intArray[i] = rnd.Next(0, RandomMaxValue);
-                    Console.WriteLine($"Source array element[{i}] = {intArray[i]}");
-                }
-                return intArray;
-            });
+            Task<int[]> taskRandom = Task.Run(() => GenerateArray());
 
-            var taskMultiply = taskRandom.ContinueWith(antecedent => //Task<int[]>???
-            {
-                var rnd = new Random();
-                var inArray = antecedent.Result;
-                var multipleOn = rnd.Next(5, 10);
-                Console.WriteLine($"Multiple array on = {multipleOn}");
-                for (int i = 0; i < 10; i++)
-                {
-                    inArray[i] = inArray[i] * multipleOn; // Error: side effect, the insput is changed, better to create output array
-                    Console.WriteLine($"Multiplied array element[{i}] = {inArray[i]}");
-                }
-                return inArray;
-            });
+            var taskMultiply = taskRandom.ContinueWith(antecedent => MultiplyArray((int[])antecedent.Result));
 
-            var taskSort = taskMultiply.ContinueWith(antecedent =>
-            {
-                var inArray = antecedent.Result;
-                var outArray = inArray.OrderBy(x=>x).ToArray();
-                for (int i = 0; i < 10; i++) // Warning: foreach
-                {
-                    Console.WriteLine($"Sorted array element[{i}] = {outArray[i]}");
-                }
-
-                return outArray;
-            });
+            var taskSort = taskMultiply.ContinueWith(antecedent => SortArray((int[])antecedent.Result));
 
             var taskAverage = taskSort.ContinueWith(antecedent =>
             {
-                var inArray = antecedent.Result;
-                var average = inArray.Average(x=>x);
-                return average;
+                return antecedent.Result.Average(x => x);
             });
 
             Console.WriteLine($"Average of sorted = {taskAverage.Result}");//this line waits for taskAverage.Result, and of course for all chaining tasks
 
         }
-
-        public int[] MultiplyArray(int[] inArray)
+        
+        public static int[] GenerateArray()
         {
-            var rnd = new Random();
-            var multipleOn = rnd.Next(0, 10);
-            for (int i = 0; i < 10; i++)
+            // Warning: better to use common randomiser
+            var intArray = new int[_arrayLength]; // Warning: use const or extrnal variable instead of 10
+            for (int i = 0; i < _arrayLength; i++) // Error: use Length property, the same in all cases bellow
             {
-                inArray[i] = inArray[i] * multipleOn;
+                intArray[i] = _rnd.Next(0, RandomMaxValue);
+                Console.WriteLine($"Source array element[{i}] = {intArray[i]}");
+            }
+            return intArray;
+        }
+
+        public static int[] MultiplyArray(int[] inArray)
+        {
+            var outArray = new int[10];
+            inArray.CopyTo(outArray, 0);
+
+            var multipleOn = _rnd.Next(_minRandomValue, _maxRandomValue);
+            Console.WriteLine($"Multiple array on = {multipleOn}");
+            for (int i = 0; i < _arrayLength; i++)
+            {
+                outArray[i] = inArray[i] * multipleOn; // Error: side effect, the insput is changed, better to create output array
                 Console.WriteLine($"Multiplied array element[{i}] = {inArray[i]}");
             }
-            return inArray;
+            return outArray;
         }
+
+        public static int[] SortArray(int[] inArray)
+        {
+            var outArray = inArray.OrderBy(x => x).ToArray();
+            for (int i = 0; i < _arrayLength; i++) // Warning: foreach
+            {
+                Console.WriteLine($"Sorted array element[{i}] = {outArray[i]}");
+            }
+
+            return outArray;
+        }
+        
     }
+    
 }
