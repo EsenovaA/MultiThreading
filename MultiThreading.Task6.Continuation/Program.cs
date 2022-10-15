@@ -7,6 +7,8 @@
    Demonstrate the work of the each case with console utility.
 */
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MultiThreading.Task6.Continuation
 {
@@ -23,8 +25,78 @@ namespace MultiThreading.Task6.Continuation
             Console.WriteLine();
 
             // feel free to add your code
+            var helper = new ContinuationHelper();
+            helper.ContinueAnywayAsync();
+            helper.ContinueOnFailAsync();
+            helper.ContinueOnFailAndReuseParentAsync();
+            helper.ContinueOnCancelAsync();
 
             Console.ReadLine();
+        }
+    }
+
+    public class ContinuationHelper
+    {
+        public async Task ContinueAnywayAsync()
+        {
+            var task = Task.Run(() => throw new InvalidOperationException("This task fails always!"));
+
+            await task.ContinueWith(
+                antecedent =>
+                {
+                    Console.WriteLine("This prints in child task regardless of parent's result.");
+                }, TaskContinuationOptions.None);
+        }
+
+        public async Task ContinueOnFailAsync()
+        {
+            var task = Task.Run(() => throw new InvalidOperationException("This task fails always!"));
+
+            await task.ContinueWith(
+                antecedent =>
+                {
+                    Console.WriteLine("This prints in child task if parent failed with unhandled exception.");
+                }, TaskContinuationOptions.OnlyOnFaulted);
+        }
+
+        public async Task ContinueOnFailAndReuseParentAsync()
+        {
+            var task = Task.Run(() => throw new InvalidOperationException("This task fails always!"));
+
+            await task.ContinueWith(
+                antecedent =>
+                {
+                    Console.WriteLine("This prints in child task if parent failed with unhandled exception. Child task reuses parent's thread.");
+                }, TaskContinuationOptions.AttachedToParent);
+        }
+
+        public async Task ContinueOnCancelAsync()
+        {
+            var tokenSource = new CancellationTokenSource();
+            var token = tokenSource.Token;
+
+            var task = Task.Run(() => DoSomeWork(token), token);
+
+            //Let's wait little
+            Thread.Sleep(2000);
+
+            //Cancel
+            tokenSource.Cancel();
+
+            await task.ContinueWith(
+                antecedent =>
+                {
+                    Console.WriteLine("This prints in child task if parent was cancelled. Child task runs outside thread pool.");
+                }, TaskContinuationOptions.LongRunning);
+        }
+
+        private void DoSomeWork(CancellationToken token)
+        {
+            while (!token.IsCancellationRequested)
+            {
+                Thread.Sleep(500);
+                Console.WriteLine("Piece of work has been done.");
+            }
         }
     }
 }

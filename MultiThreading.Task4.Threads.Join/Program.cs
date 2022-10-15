@@ -30,6 +30,10 @@ namespace MultiThreading.Task4.Threads.Join
             Console.WriteLine();
 
             // feel free to add your code
+            //var threadJoin = new ThreadJoin();
+            //var thread = new Thread(threadJoin.CreateThreadsRecursively);
+            //thread.Name = "Initial thread with join";
+            //thread.Start(28);
 
             var threadFromPool = new ThreadFromPool();
             var thread1 = new Thread(threadFromPool.CreateThreadsRecursively);
