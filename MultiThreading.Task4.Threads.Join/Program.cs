@@ -36,6 +36,7 @@ namespace MultiThreading.Task4.Threads.Join
             //thread.Start(28);
 
             var threadFromPool = new ThreadFromPool();
+            // Warning: first thread should be from Thread Pool as well
             var thread1 = new Thread(threadFromPool.CreateThreadsRecursively);
             thread1.Name = "Initial thread with pool";
             thread1.Start(new[] { 38 });
@@ -46,6 +47,7 @@ namespace MultiThreading.Task4.Threads.Join
 
     public class ThreadJoin
     {
+        // Warning: avoid using shared variables (especially public) in multithreading context without access control
         public int ThreadsCount = 10;
 
         public void CreateThreadsRecursively(object state)

@@ -35,7 +35,7 @@ namespace MultiThreading.Task2.Chaining
 
         static void ExecuteTaskChain()
         {
-            // Warning: Use methods as tasks bodies
+            // Warning: use shorter "syntax sugar" where it's possible
             Task<int[]> taskRandom = Task.Run(() => GenerateArray());
 
             var taskMultiply = taskRandom.ContinueWith(antecedent => MultiplyArray((int[])antecedent.Result));
@@ -53,9 +53,8 @@ namespace MultiThreading.Task2.Chaining
         
         public static int[] GenerateArray()
         {
-            // Warning: better to use common randomiser
-            var intArray = new int[_arrayLength]; // Warning: use const or extrnal variable instead of 10
-            for (int i = 0; i < _arrayLength; i++) // Error: use Length property, the same in all cases bellow
+            var intArray = new int[_arrayLength];
+            for (int i = 0; i < _arrayLength; i++)
             {
                 intArray[i] = _rnd.Next(0, RandomMaxValue);
                 Console.WriteLine($"Source array element[{i}] = {intArray[i]}");
@@ -72,8 +71,8 @@ namespace MultiThreading.Task2.Chaining
             Console.WriteLine($"Multiple array on = {multipleOn}");
             for (int i = 0; i < _arrayLength; i++)
             {
-                outArray[i] = inArray[i] * multipleOn; // Error: side effect, the insput is changed, better to create output array
-                Console.WriteLine($"Multiplied array element[{i}] = {inArray[i]}");
+                outArray[i] = inArray[i] * multipleOn;
+                Console.WriteLine($"Multiplied array element[{i}] = {inArray[i]}"); // Error: input array instead of output:)
             }
             return outArray;
         }
@@ -81,7 +80,7 @@ namespace MultiThreading.Task2.Chaining
         public static int[] SortArray(int[] inArray)
         {
             var outArray = inArray.OrderBy(x => x).ToArray();
-            for (int i = 0; i < _arrayLength; i++) // Warning: foreach
+            for (int i = 0; i < _arrayLength; i++)
             {
                 Console.WriteLine($"Sorted array element[{i}] = {outArray[i]}");
             }

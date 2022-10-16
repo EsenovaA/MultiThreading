@@ -15,6 +15,7 @@ namespace MultiThreading.Task5.Threads.SharedCollection
 {
     class Program
     {
+        // Warning: overcomplicated, you didn't have to do so much in this task:)
         static void Main(string[] args)
         {
             Console.WriteLine("5. Write a program which creates two threads and a shared collection:");

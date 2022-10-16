@@ -63,6 +63,8 @@ namespace MultiThreading.Task6.Continuation
         {
             var task = Task.Run(() => throw new InvalidOperationException("This task fails always!"));
 
+            // Error: I believe ExecuteSynchronously flag should be used here
+            // Error: continues always, not on fail (hint: you can use several flags)
             await task.ContinueWith(
                 antecedent =>
                 {
@@ -83,6 +85,7 @@ namespace MultiThreading.Task6.Continuation
             //Cancel
             tokenSource.Cancel();
 
+            // Error: continues always, not on cancel (hint: you can use several flags)
             await task.ContinueWith(
                 antecedent =>
                 {

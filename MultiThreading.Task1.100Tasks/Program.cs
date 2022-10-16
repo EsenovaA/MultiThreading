@@ -29,11 +29,10 @@ namespace MultiThreading.Task1._100Tasks
             var tasks = new Task[TaskAmount];
             for (int i = 0; i < TaskAmount; i++)
             {
-                // Warning: Better to use Task.Factory
+                // Error: variable i is modifying outside of the task, that's why most of the tasks have i == 100
                 Task.Factory.StartNew(() => Print(i));
             }
 
-            // Error: no need to use Parallel to start already parallel tasks
             Task.WhenAll(tasks);
         }
 
