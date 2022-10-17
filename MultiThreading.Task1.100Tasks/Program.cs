@@ -30,9 +30,11 @@ namespace MultiThreading.Task1._100Tasks
             for (int i = 0; i < TaskAmount; i++)
             {
                 // Error: variable i is modifying outside of the task, that's why most of the tasks have i == 100
-                Task.Factory.StartNew(() => Print(i));
+                tasks[i] = new Task((object param) => Print(i), i);
+                tasks[i].Start();
+                //Task.Factory.StartNew(() => Print(i));
             }
-
+            
             Task.WhenAll(tasks);
         }
 

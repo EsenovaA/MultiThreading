@@ -61,7 +61,10 @@ namespace MultiThreading.Task6.Continuation
 
         public async Task ContinueOnFailAndReuseParentAsync()
         {
-            var task = Task.Run(() => throw new InvalidOperationException("This task fails always!"));
+            var task = Task.Run(() =>
+            throw new InvalidOperationException("This task fails always!")
+            //Console.WriteLine("Parent task executed successfully.")
+            );
 
             // Error: I believe ExecuteSynchronously flag should be used here
             // Error: continues always, not on fail (hint: you can use several flags)
@@ -69,7 +72,7 @@ namespace MultiThreading.Task6.Continuation
                 antecedent =>
                 {
                     Console.WriteLine("This prints in child task if parent failed with unhandled exception. Child task reuses parent's thread.");
-                }, TaskContinuationOptions.AttachedToParent);
+                }, TaskContinuationOptions.AttachedToParent | TaskContinuationOptions.OnlyOnFaulted);
         }
 
         public async Task ContinueOnCancelAsync()
@@ -90,7 +93,7 @@ namespace MultiThreading.Task6.Continuation
                 antecedent =>
                 {
                     Console.WriteLine("This prints in child task if parent was cancelled. Child task runs outside thread pool.");
-                }, TaskContinuationOptions.LongRunning);
+                }, TaskContinuationOptions.LongRunning | TaskContinuationOptions.OnlyOnFaulted);
         }
 
         private void DoSomeWork(CancellationToken token)

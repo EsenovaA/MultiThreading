@@ -72,7 +72,7 @@ namespace MultiThreading.Task2.Chaining
             for (int i = 0; i < _arrayLength; i++)
             {
                 outArray[i] = inArray[i] * multipleOn;
-                Console.WriteLine($"Multiplied array element[{i}] = {inArray[i]}"); // Error: input array instead of output:)
+                Console.WriteLine($"Multiplied array element[{i}] = {outArray[i]}"); // Error: input array instead of output:)
             }
             return outArray;
         }

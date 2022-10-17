@@ -16,7 +16,7 @@ namespace MultiThreading.Task3.MatrixMultiplier.Multipliers
         }
 
         // Warning: this method should be private
-        public void SetMultipliedElementParallel(IMatrix m1, IMatrix m2, Matrix resultMatrix, long i)
+        private void SetMultipliedElementParallel(IMatrix m1, IMatrix m2, Matrix resultMatrix, long i)
         {
             Parallel.For(0, m2.ColCount, j => resultMatrix.SetMultipliedElement(m1, m2, i, j));
         }

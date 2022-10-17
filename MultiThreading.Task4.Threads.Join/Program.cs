@@ -48,7 +48,7 @@ namespace MultiThreading.Task4.Threads.Join
     public class ThreadJoin
     {
         // Warning: avoid using shared variables (especially public) in multithreading context without access control
-        public int ThreadsCount = 10;
+        private int ThreadsCount = 10;
 
         public void CreateThreadsRecursively(object state)
         {
@@ -77,7 +77,7 @@ namespace MultiThreading.Task4.Threads.Join
     {
         private static Semaphore _pool = new Semaphore(initialCount: 1, maximumCount: 1);
 
-        public int ThreadsCount = 10;
+        private int ThreadsCount = 10;
 
         public void CreateThreadsRecursively(object state)
         {
